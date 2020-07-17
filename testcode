@@ -1,0 +1,1 @@
+SUBSTITUTE({!oCase.SuppliedEmail}, LEFT({!oCase.SuppliedEmail}, FIND("@", {!oCase.SuppliedEmail})), NULL)
