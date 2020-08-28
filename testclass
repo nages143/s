@@ -1,0 +1,26 @@
+@isTest
+public with sharing class updateRequestStatusTest {
+   
+    
+        @TestSetup
+        static void createTestData(){
+            //Create Test OPG Request Record
+            //Create approval matrix records
+            //create approval allocation records
+            
+            
+            
+
+        }
+        @isTest
+        static void testupdateStatus() {
+            //call class with parameters
+            try {
+            classname.method(parameters);
+            }
+            catch(Exception e){
+                
+            }
+        }
+    
+    }
