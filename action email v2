@@ -1,0 +1,42 @@
+global class customsendmail {
+    global class FlowInputs{
+        
+        @InvocableVariable(required=true)
+        global string fromAddress;
+        
+        @InvocableVariable(required=true)
+        global list<string> toAddress;
+        
+        @InvocableVariable(required=true)
+        global string htmlbody;
+        
+        @InvocableVariable(required=true)
+        global string subject;
+        
+    }
+    
+    @InvocableMethod(label='Custom Send Mail')
+    global static void sendmassmails(List<FlowInputs> request) {
+        List<Messaging.SingleEmailMessage> mails =   new List<Messaging.SingleEmailMessage>();
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+        List<String> sendTo = new List<String>();    
+        
+        
+        for(FlowInputs r : request)
+        {
+            
+            for(string s : r.toAddress){
+                sendTo.add(s);
+            }
+            
+            mail.setToAddresses(sendTo);
+            mail.setSubject(r.subject);
+            mail.setHtmlBody(r.htmlBody);
+            for(OrgWideEmailAddress owa : [select id, Address,DisplayName  from OrgWideEmailAddress where Address=:r.fromAddress ]) {
+                mail.setOrgWideEmailAddressId(owa.Id);
+            }
+            mails.add(mail);
+        }
+        Messaging.sendEmail(mails);
+    }
+}
