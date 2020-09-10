@@ -1,0 +1,37 @@
+global with sharing class dedupStringCollections {
+    global class ExtractStringsException extends Exception {}
+    @InvocableMethod(Label = 'Deduplicate String Collection')
+    global static List <Results> dedupCollections(List<Requests> requestList) {
+        
+        List<Results> responseWrapper = new List<Results>();
+        for (Requests curRequest : requestList) {
+            if (curRequest.inputCollection == null || curRequest.inputCollection.size() == 0) {
+                throw new ExtractStringsException('Input record list is required, but empty');
+            }
+            Results response = new Results();
+            List<String> noDupes = new List<String>(new Set<String>(curRequest.inputCollection));
+            response.outputCollection.addAll(noDupes);
+            responseWrapper.add(response);
+            
+        }
+        
+        
+        return responseWrapper;
+    }
+    
+    global class Requests {
+        @InvocableVariable(Label = 'Duplicates String Collection' required=true)
+        global List<String> inputCollection;
+        
+    }
+    
+    global class Results {
+        
+        public Results() {
+            outputCollection = new List<String>();
+        }
+        
+        @InvocableVariable(Label = 'Unique String Collection')
+        global List<String> outputCollection;
+    }
+}
