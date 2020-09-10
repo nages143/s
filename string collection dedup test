@@ -1,0 +1,31 @@
+@istest
+public class dedupStringCollectionsTest {
+    
+    @isTest
+    static void testa()
+    {
+        
+        List<dedupStringCollections.Requests> testRequestList = new List<dedupStringCollections.Requests>();
+        dedupStringCollections.Requests testRequest = new dedupStringCollections.Requests();
+        List<string> Input = new list<string> {'a','a'};
+            testRequest.inputCollection = Input;
+        testRequestList.add(testRequest);
+        List<string> output = new list<string> {'a'};
+            
+            List<dedupStringCollections.Results> resultList = dedupStringCollections.dedupCollections(testRequestList);
+        System.assertEquals(resultList[0].outputCollection ,output);
+        
+        List<string> Input1 = new list<string> {};
+            testRequest.inputCollection = Input1;
+        testRequestList.add(testRequest);
+        try
+        {
+            List<dedupStringCollections.Results> resultList1 = dedupStringCollections.dedupCollections(testRequestList);
+        }
+        catch(exception e){
+            System.assert(e.getMessage().contains('Input record list is required'));
+        }
+        
+    }
+}
+
