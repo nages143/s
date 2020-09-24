@@ -1,0 +1,16 @@
+@istest
+public class GMOgetToAddressTest {
+    @isTest
+    static void testa()
+    {
+        List<GMOgetToaddress.Requests> testRequestList = new List<GMOgetToaddress.Requests>();
+       //+ve scenario
+        GMOgetToaddress.Requests testRequest = new GMOgetToaddress.Requests();
+        testRequest.OPGId = '0051i000000FCTGAA4';//user id hard code
+        testRequestList.add(testRequest);
+        List<GMOgetToaddress.Results> resultList = GMOgetToaddress.getToAddress(testRequestList);
+       
+        
+    }
+    
+}
