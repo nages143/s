@@ -1,0 +1,45 @@
+global without sharing class GMOgetToaddress {
+    
+    @InvocableMethod(Label = 'GMO TO Address')
+    global static List <Results> getToAddress(List<Requests> requestList) {
+        List<Results> responseWrapper = new List<Results>();
+        for (Requests curRequest : requestList) {
+           
+            Results response = new Results();
+            
+            //Logic Start
+            string  u = [select email from user where id =:curRequest.OPGId].email;//Sample
+            
+            //
+            //
+            //
+            //
+            //
+            response.outputToAddress.add(u); //Sample
+            response.outputToAddress.add('nages143@gmail.com');
+            //Logic End
+            responseWrapper.add(response);
+        }
+        
+        return responseWrapper;        
+    }
+    
+    
+    //Input from Flow
+    global class Requests {
+        @InvocableVariable(Label = 'OPG Id' required=true)
+        global Id OPGId;
+    }
+    
+    //Output for Flow
+    global class Results {
+        public Results() {
+            outputToAddress = new List<String>();
+        }
+        @InvocableVariable(Label = 'TO Addressess')
+        global List<String> outputToAddress;
+    }
+    
+    global class ExtractStringsException extends Exception {}
+    
+}
