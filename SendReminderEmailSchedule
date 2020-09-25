@@ -1,0 +1,14 @@
+global class SendReminderEmailSchedule implements Schedulable{
+    global void execute(SchedulableContext sc) {
+        Date Date5 = date.today().adddays(5);
+        String q = 'SELECT Id, closedate, name FROM opportunity  WHERE closedate='+DateTime.newInstance(Date5.year(),Date5.month(),Date5.day()).format('YYYY-MM-d');
+        SendReminderEmail batch = new SendReminderEmail(q, 'Final Reminder Close Date+5', 'Close Date+5');
+        Database.executeBatch(batch);
+        
+        Date Date1 = date.today().adddays(1);
+        String q1 = 'SELECT Id, closedate, name FROM opportunity  WHERE closedate='+DateTime.newInstance(Date1.year(),Date1.month(),Date1.day()).format('YYYY-MM-d');
+        SendReminderEmail batch1 = new SendReminderEmail(q1, 'Final Reminder Close Date+1', 'Close Date+1');
+        Database.executeBatch(batch1);
+        
+    }
+}
