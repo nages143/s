@@ -1,0 +1,17 @@
+global class BirthdayNameOptions implements Schedulable {
+    global void execute (SchedulableContext ctx) {
+        sendBirthdayEmail();
+    }
+    public void sendBirthdayEmail() {
+        List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+        for ( Contact con : [SELECT Id, Name FROM Contact WHERE Next_Birthday__c = : system.Today().addDays(2)] ) {
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setTemplateId('00XJ0000000M31w');
+            mail.setTargetObjectId(con.Id);
+            mail.setSaveAsActivity(false);
+            mails.add(mail);
+        }
+        if ( mails.size() > 0 )
+            Messaging.sendEmail(mails, false);
+    }
+}
