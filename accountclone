@@ -1,0 +1,22 @@
+Id recordId = '0015E0000179ojzQAA';
+List<String> fields = new List<String>();
+fields.addAll(Account.getsObjectType().getDescribe().fields.getMap().keySet());
+String soql = 'SELECT ' + String.join(fields, ',') +
+    ' FROM Account WHERE Id =: recordId ';
+Account a = Database.query(soql);
+Account clonedaccount= a.clone(false, false, false, false);
+if (a.ParentId == null){
+    clonedaccount.ParentId = recordId;
+}
+else 
+{
+    clonedaccount.ParentId = a.ParentId;
+}
+try {
+insert clonedaccount;
+}
+catch(exception e)
+{
+    
+}
+system.debug(clonedaccount);
