@@ -1,0 +1,19 @@
+Id crecordId = '0015E000017DuZxQAK'; // child record id - approve aanathu
+List<String> fields = new List<String>();
+fields.addAll(Account.getsObjectType().getDescribe().fields.getMap().keySet());
+String soql = 'SELECT ' + String.join(fields, ',') +
+    ' FROM Account WHERE Id =: crecordId ';
+Account cr = Database.query(soql);
+Account Parentaccount= cr.clone(false, false, false, false);
+
+Parentaccount.Id=cr.ParentId ;
+Parentaccount.ParentId='';
+
+try {
+update Parentaccount;
+system.debug(Parentaccount);
+}
+catch(exception e)
+{
+system.debug(e);    
+}
