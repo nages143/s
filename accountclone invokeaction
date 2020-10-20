@@ -1,0 +1,65 @@
+global without sharing class AccountClone {
+    
+    
+    @InvocableMethod(Label = 'Account Clone')
+    global static List <Results> getToAddress(List<Requests> requestList) {
+        List<Results> responseWrapper = new List<Results>();
+        for (Requests curRequest : requestList) {
+            
+            Results response = new Results();
+            
+            //Logic Start
+            List<String> fields = new List<String>();
+            fields.addAll(Account.getsObjectType().getDescribe().fields.getMap().keySet());
+            String soql = 'SELECT ' + String.join(fields, ',') +
+                ' FROM Account WHERE Id =:' ;
+            Id pppid =curRequest.parentId;
+            Account a = Database.query(soql+'pppid');
+            Account clonedaccount= a.clone(false, false, false, false);
+            if (a.ParentId == null){
+                clonedaccount.ParentId = curRequest.parentId;
+            }
+            
+            try {
+                insert clonedaccount;
+            }
+            catch(exception e)
+            {
+                
+            }
+            
+            
+            
+            //
+            //
+            //
+            //
+            //
+            response.outputToAddress.add(clonedaccount.Id); //Sample
+          
+            //response.outputToAddress.add('nages143@gmail.com');
+            //Logic End
+            responseWrapper.add(response);
+        }
+        
+        return responseWrapper;        
+    }
+    
+    //Input from Flow
+    global class Requests {
+        @InvocableVariable(Label = 'parentId' required=true)
+        global Id parentId;
+    }
+    
+    //Output for Flow
+    global class Results {
+        public Results() {
+            outputToAddress = new List<String>();
+        }
+        @InvocableVariable(Label = 'outputNewAccountId')
+        global List<String> outputToAddress;
+       
+    }
+    
+    global class ExtractStringsException extends Exception {}
+}
