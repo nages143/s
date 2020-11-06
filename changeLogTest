@@ -1,0 +1,60 @@
+@isTest
+private class changeLogETRTest {
+    //Test Account Creation
+    static Account getTestAccount(){
+        Account myAcc = new Account(Name = 'Test');
+        insert myAcc;
+        return myAcc;
+    }
+    
+    //Test Contact Creation with test Account
+    static Contact getTestContact(){
+        Account a = getTestAccount();
+        Contact myCon = new Contact(LastName = 'Test Last Name', AccountId = a.Id);
+        insert myCon;
+        return myCon;
+    }
+    
+    
+    //Test opty Creation with test Contact & Account
+    static Opportunity getTestOpty(){
+        Account a = getTestAccount();
+        Contact c = getTestContact();
+        Pricebook2 customPB = new Pricebook2(Name='Custom Pricebook', isActive=true);
+        insert customPB;
+        Product2 prod = new Product2(Name = 'Flexx X200');
+        insert prod;
+        Id pricebookId = Test.getStandardPricebookId();
+        
+        PricebookEntry standardPrice = new PricebookEntry(Pricebook2Id = pricebookId, Product2Id = prod.Id,UnitPrice = 10000, IsActive = true);
+        insert standardPrice;
+        PricebookEntry customPrice = new PricebookEntry(Pricebook2Id = customPB.Id, Product2Id = prod.Id,
+            UnitPrice = 12000, IsActive = true);
+        insert customPrice;
+        
+        Opportunity myOpty = new Opportunity(Name = 'Test opty Name', PrimaryContact__c=c.Id, AccountId = a.Id, Pricebook2Id=customPB.Id, StageName='Evaluation Phase', CTO_ETO__c='CTO',Main_Competitor__c='TRANE Global',Amount=1, CloseDate = Date.newInstance(2980 , 10 ,20));
+        insert myOpty;
+        
+        OpportunityLineItem optyLineItem = new OpportunityLineItem(OpportunityId=myOpty.Id,Product2Id=prod.Id, Quantity=1,UnitPrice=10);
+        insert optyLineItem;
+        return myOpty;
+    }
+    //Test ETR Creation
+    static Engineering_Technical_Request__c getTestETR(){
+        Opportunity opty = getTestOpty();
+        Opportunitylineitem oLineItem = [Select Id from Opportunitylineitem where OpportunityId=: opty.Id limit 1];
+        Engineering_Technical_Request__c ETR = new Engineering_Technical_Request__c(Name = 'testEtr',Opportunity__c=opty.Id,Opty_LineItem_Id__c=oLineItem.Id);
+        insert ETR;
+        return ETR;
+        
+    }
+    
+    @isTest static void TestupdateETR() {
+        
+        Engineering_Technical_Request__c etr = getTestETR();
+        Engineering_Technical_Request__c etrupdate = [select id,name, Frage__c from Engineering_Technical_Request__c where id=: etr.Id];
+        etrupdate.Frage__c = 'Nageswaran'; 
+        update etrupdate;
+        
+    }
+}
