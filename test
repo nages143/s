@@ -1,3 +1,12 @@
+
+**Introducing the Tradability Rules Library**
+
+We are pleased to introduce the Tradability Rules Library, a comprehensive tool designed to manage tradability rules with an approval process overseen by the Markets Business. This initiative aims to ensure the completeness, accurate maintenance, and timely updates of regulatory rule interpretations and the design of associated tradability controls. By implementing this library, we will significantly enhance operational compliance with these regulations within the Markets business.
+
+The successful delivery of this project will also fulfill the ORAC Action ACTION-000220919.
+
+
+
 Certainly! Here's the comprehensive list of all scenarios for testing the rule catalogue software where the Chief Compliance Officer (CCO) can select approval groups during any action, including scenarios related to the legal and compliance teams:
 
 1. **Positive Scenarios:**
