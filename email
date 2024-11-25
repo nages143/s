@@ -1,0 +1,101 @@
+To extract the subject and body of emails from Outlook and save them as a CSV file, you can use Microsoft Outlook with VBA (Visual Basic for Applications) or PowerShell. Below, I’ll provide a step-by-step guide for both methods.
+
+Method 1: Using VBA in Outlook
+
+	1.	Open Outlook and press Alt + F11 to open the VBA editor.
+	2.	Insert a new module:
+	•	Click on Insert > Module.
+	3.	Copy and paste the following VBA code into the module:
+
+Sub ExportEmailsToCSV()
+    Dim ns As Outlook.Namespace
+    Dim folder As Outlook.MAPIFolder
+    Dim item As Object
+    Dim mailItem As Outlook.MailItem
+    Dim filePath As String
+    Dim outputFile As Object
+    Dim subject As String
+    Dim body As String
+
+    ' Set the path for the CSV file
+    filePath = "C:\Path\To\Your\File\emails.csv"
+
+    ' Open the file for output
+    Set outputFile = CreateObject("Scripting.FileSystemObject").OpenTextFile(filePath, 2, True)
+
+    ' Write the header row
+    outputFile.WriteLine "Subject,Body"
+
+    ' Set the namespace and the folder (Inbox in this case)
+    Set ns = Application.GetNamespace("MAPI")
+    Set folder = ns.GetDefaultFolder(olFolderInbox)
+
+    ' Loop through each item in the folder
+    For Each item In folder.Items
+        If TypeOf item Is Outlook.MailItem Then
+            Set mailItem = item
+            subject = mailItem.Subject
+            body = mailItem.Body
+            ' Write the subject and body to the file
+            outputFile.WriteLine """" & Replace(subject, """", """""") & """,""" & Replace(body, """", """""") & """"
+        End If
+    Next item
+
+    ' Close the file
+    outputFile.Close
+
+    ' Notify the user
+    MsgBox "Emails exported to " & filePath, vbInformation
+End Sub
+
+	4.	Edit the file path in the script to specify where you want to save the CSV file.
+	5.	Run the script:
+	•	Close the VBA editor.
+	•	Press Alt + F8, select ExportEmailsToCSV, and click Run.
+
+Method 2: Using PowerShell
+
+	1.	Open PowerShell ISE or any text editor and paste the following script:
+
+# Define the path to save the CSV file
+$csvFilePath = "C:\Path\To\Your\File\emails.csv"
+
+# Create Outlook COM object
+$outlook = New-Object -ComObject Outlook.Application
+$namespace = $outlook.GetNamespace("MAPI")
+
+# Get the Inbox folder
+$inbox = $namespace.GetDefaultFolder([Microsoft.Office.Interop.Outlook.OlDefaultFolders]::olFolderInbox)
+
+# Create a DataTable to store the email subjects and bodies
+$dataTable = New-Object System.Data.DataTable
+$dataTable.Columns.Add("Subject") | Out-Null
+$dataTable.Columns.Add("Body") | Out-Null
+
+# Loop through each email item in the Inbox
+foreach ($item in $inbox.Items) {
+    if ($item -is [Microsoft.Office.Interop.Outlook.MailItem]) {
+        $row = $dataTable.NewRow()
+        $row["Subject"] = $item.Subject
+        $row["Body"] = $item.Body
+        $dataTable.Rows.Add($row)
+    }
+}
+
+# Export the DataTable to a CSV file
+$dataTable | Export-Csv -Path $csvFilePath -NoTypeInformation
+
+# Notify the user
+Write-Output "Emails exported to $csvFilePath"
+
+	2.	Edit the file path in the script to specify where you want to save the CSV file.
+	3.	Run the script:
+	•	Save the script with a .ps1 extension, e.g., ExportEmails.ps1.
+	•	Open PowerShell and navigate to the directory where the script is saved.
+	•	Run the script by typing .\ExportEmails.ps1.
+
+Notes
+
+	•	Ensure that you have the necessary permissions to run these scripts and access Outlook data.
+	•	These scripts are basic and may need adjustments depending on your specific needs (e.g., handling attachments, different folders, filtering by date).
+	•	Make sure to replace "C:\Path\To\Your\File\emails.csv" with the actual path where you want to save your CSV file.
