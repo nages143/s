@@ -1,9 +1,8 @@
-Sub GenerateStudentSubjects()
+Sub GenerateStudentSubjectsFromRows()
     Dim wsStudents As Worksheet, wsSubjects As Worksheet, wsOutput As Worksheet
-    Dim student As Range
-    Dim lastStudentRow As Long, lastSubjectCol As Long
+    Dim lastStudentRow As Long, lastSubjectRow As Long
+    Dim student As Range, subjectRow As Range
     Dim outputRow As Long
-    Dim i As Integer
     
     ' Define worksheets
     Set wsStudents = ThisWorkbook.Sheets("Students") ' Change if needed
@@ -29,20 +28,23 @@ Sub GenerateStudentSubjects()
 
     ' Get last row of students
     lastStudentRow = wsStudents.Cells(Rows.Count, 1).End(xlUp).Row
-
-    ' Get last column of subjects dynamically
-    lastSubjectCol = wsSubjects.Cells(1, Columns.Count).End(xlToLeft).Column
+    
+    ' Get last row of subjects
+    lastSubjectRow = wsSubjects.Cells(Rows.Count, 1).End(xlUp).Row
 
     ' Loop through each student
     For Each student In wsStudents.Range("A2:A" & lastStudentRow)
-        ' Loop through each subject column dynamically
-        For i = 1 To lastSubjectCol
-            wsOutput.Cells(outputRow, 1).Value = student.Value
-            wsOutput.Cells(outputRow, 2).Value = wsSubjects.Cells(1, i).Value ' Subject Name
-            wsOutput.Cells(outputRow, 3).Value = wsSubjects.Cells(2, i).Value ' Result
-            outputRow = outputRow + 1
-        Next i
+        ' Loop through each row in Subjects Sheet
+        For Each subjectRow In wsSubjects.Range("A2:A" & lastSubjectRow)
+            ' Check if Student ID matches
+            If subjectRow.Value = student.Value Then
+                wsOutput.Cells(outputRow, 1).Value = subjectRow.Value ' Student ID
+                wsOutput.Cells(outputRow, 2).Value = subjectRow.Offset(0, 1).Value ' Subject
+                wsOutput.Cells(outputRow, 3).Value = subjectRow.Offset(0, 2).Value ' Result
+                outputRow = outputRow + 1
+            End If
+        Next subjectRow
     Next student
 
-    MsgBox "Student-Subject sheet created dynamically!", vbInformation
+    MsgBox "Student-Subject sheet created successfully!", vbInformation
 End Sub
