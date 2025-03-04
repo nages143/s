@@ -22,6 +22,7 @@ Sub GenerateStudentSubjects()
     ' Headers
     wsOutput.Cells(1, 1).Value = "StudentId"
     wsOutput.Cells(1, 2).Value = "Subject"
+    wsOutput.Cells(1, 3).Value = "Result"
 
     outputRow = 2
 
@@ -37,9 +38,10 @@ Sub GenerateStudentSubjects()
         For Each subject In wsSubjects.Range("A2:A" & lastSubjectRow)
             wsOutput.Cells(outputRow, 1).Value = student.Value
             wsOutput.Cells(outputRow, 2).Value = subject.Value
+            wsOutput.Cells(outputRow, 3).Value = subject.Offset(0, 1).Value ' Result column
             outputRow = outputRow + 1
         Next subject
     Next student
 
-    MsgBox "Student-Subject sheet created!", vbInformation
+    MsgBox "Student-Subject sheet created with results!", vbInformation
 End Sub
