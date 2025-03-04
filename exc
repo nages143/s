@@ -3,10 +3,19 @@ Sub MergeStudentsWithSubjects()
     Dim student As Range, subjectRow As Range
     Dim lastStudentRow As Long, lastSubjectRow As Long
     Dim outputRow As Long
+    Dim lastCol As Long
     
-    ' Define worksheets
-    Set wsStudents = ThisWorkbook.Sheets("Students") ' Change if needed
-    Set wsSubjects = ThisWorkbook.Sheets("Subjects") ' Change if needed
+    ' Set worksheets
+    On Error Resume Next
+    Set wsStudents = ThisWorkbook.Sheets("Students")
+    Set wsSubjects = ThisWorkbook.Sheets("Subjects")
+    
+    ' Check if sheets exist
+    If wsStudents Is Nothing Or wsSubjects Is Nothing Then
+        MsgBox "Error: 'Students' or 'Subjects' sheet not found!", vbCritical
+        Exit Sub
+    End If
+    On Error GoTo 0
     
     ' Create or clear output sheet
     On Error Resume Next
@@ -19,22 +28,24 @@ Sub MergeStudentsWithSubjects()
     End If
     On Error GoTo 0
     
-    ' Copy headers from Subjects Sheet and add StudentId as the first column
-    wsOutput.Cells(1, 1).Value = "StudentId"
-    wsSubjects.Rows(1).Copy wsOutput.Cells(1, 2)
-    
-    outputRow = 2
-
-    ' Get last row of students and subjects
+    ' Get last row and last column dynamically
     lastStudentRow = wsStudents.Cells(Rows.Count, 1).End(xlUp).Row
     lastSubjectRow = wsSubjects.Cells(Rows.Count, 1).End(xlUp).Row
-
+    lastCol = wsSubjects.Cells(1, Columns.Count).End(xlToLeft).Column ' Find last column
+    
+    ' Copy headers from Subjects Sheet and add "StudentId" as first column
+    wsOutput.Cells(1, 1).Value = "StudentId"
+    wsSubjects.Range(wsSubjects.Cells(1, 1), wsSubjects.Cells(1, lastCol)).Copy
+    wsOutput.Cells(1, 2).PasteSpecial Paste:=xlPasteValues
+    
+    outputRow = 2
+    
     ' Loop through each student
     For Each student In wsStudents.Range("A2:A" & lastStudentRow)
         ' Loop through each row in Subjects Sheet
         For Each subjectRow In wsSubjects.Range("A2:A" & lastSubjectRow)
             wsOutput.Cells(outputRow, 1).Value = student.Value ' StudentId
-            wsSubjects.Range("A" & subjectRow.Row & ":D" & subjectRow.Row).Copy
+            wsSubjects.Range(wsSubjects.Cells(subjectRow.Row, 1), wsSubjects.Cells(subjectRow.Row, lastCol)).Copy
             wsOutput.Cells(outputRow, 2).PasteSpecial Paste:=xlPasteValues
             outputRow = outputRow + 1
         Next subjectRow
